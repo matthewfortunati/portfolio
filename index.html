@@ -78,6 +78,7 @@
   .shots img { width: 100%; height: auto; display: block; border-radius: 6px; }
   .shots figcaption { font-family: var(--mono); font-size: 0.72rem; color: var(--fg-2); margin-top: 6px; line-height: 1.45; }
   a.title { font-family: var(--display); font-weight: 600; }
+  .rail-photo { margin-top: 10px; max-width: 360px; }
   @media (max-width: 600px) {
     .shots, .shots.two { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 72%; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; }
     .shots figure { scroll-snap-align: start; }
@@ -87,7 +88,7 @@
   .project { display: grid; grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.65fr); gap: 20px 56px; padding-block: 44px; border-top: 1px solid var(--line); }
   .project .rail { display: grid; gap: 10px; align-content: start; position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; }
   .project .rail .meta { font-family: var(--mono); font-size: 0.8rem; color: var(--fg-2); line-height: 1.5; }
-  .content { display: grid; gap: 22px; min-width: 0; }
+  .content { display: grid; gap: 22px; min-width: 0; align-content: start; }
   .content p { max-width: 62ch; }
 
   .btns { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -200,6 +201,7 @@
       <div class="eyebrow">02 · Songs</div>
       <h2>Writing and producing</h2>
       <div class="meta">With Marta Del Grandi<br>Fire Records</div>
+      <figure class="photo rail-photo"><img src="photos/piano.jpg" alt="Matthew playing an upright piano with its front panel open, a ginger cat sitting on the keys beside him and a Revox reel-to-reel on top" width="800" height="1067" loading="lazy"></figure>
     </div>
     <div class="content">
       <div class="media">
