@@ -71,6 +71,17 @@
   .photo { margin: 0; min-width: 0; }
   .photo img { width: 100%; max-width: 100%; height: auto; display: block; }
   .photo figcaption { font-family: var(--mono); font-size: 0.76rem; color: var(--fg-2); margin-top: 8px; line-height: 1.5; }
+  .shots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .shots.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .shots figure { margin: 0; min-width: 0; }
+  .shots a { display: block; }
+  .shots img { width: 100%; height: auto; display: block; border-radius: 6px; }
+  .shots figcaption { font-family: var(--mono); font-size: 0.72rem; color: var(--fg-2); margin-top: 6px; line-height: 1.45; }
+  a.title { font-family: var(--display); font-weight: 600; }
+  @media (max-width: 600px) {
+    .shots, .shots.two { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 72%; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; }
+    .shots figure { scroll-snap-align: start; }
+  }
   @media (max-width: 640px) { }
 
   .project { display: grid; grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.65fr); gap: 20px 56px; padding-block: 44px; border-top: 1px solid var(--line); }
@@ -89,7 +100,7 @@
   .controls span.warm { border-color: var(--warm); color: var(--warm); }
 
   .places { display: grid; gap: 0; margin-top: 12px; border-top: 1px solid var(--line); }
-  .place { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 4px 18px; padding-block: 10px; border-bottom: 1px solid var(--line); font-size: 0.98rem; }
+  .place { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px 18px; padding-block: 10px; border-bottom: 1px solid var(--line); font-size: 0.98rem; }
   .place b { font-family: var(--display); font-weight: 600; }
 
   .media { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
@@ -153,14 +164,23 @@
     </div>
     <div class="content">
       <p>Spazi is a convolution reverb I've been building on my own. The idea is simple: instead of simulating a room, every preset is a real place I went to and recorded myself, and the photos I took there travel with the preset.</p>
+      <div class="shots">
+        <figure><a href="photos/spazi-train-tunnel.jpg" target="_blank" rel="noopener"><img src="photos/spazi-train-tunnel.jpg" alt="Spazi with the Ex Train Tunnel preset loaded, a photo of the tunnel above the controls" width="898" height="900" loading="lazy"></a><figcaption>Ex Train Tunnel, Narni</figcaption></figure>
+        <figure><a href="photos/spazi-teatro-pavone.jpg" target="_blank" rel="noopener"><img src="photos/spazi-teatro-pavone.jpg" alt="Spazi with the Teatro del Pavone preset loaded, a photo of the theatre's boxes and stalls" width="900" height="900" loading="lazy"></a><figcaption>Teatro del Pavone, Perugia</figcaption></figure>
+        <figure><a href="photos/spazi-consolazione.jpg" target="_blank" rel="noopener"><img src="photos/spazi-consolazione.jpg" alt="Spazi with the Tempio della Consolazione preset loaded, a photo of the domed church among the trees" width="898" height="900" loading="lazy"></a><figcaption>Tempio della Consolazione, Todi · photo: Martelli Manuel Antonio</figcaption></figure>
+      </div>
       <p>I write the code in C++ with JUCE, and I'll admit the engine took longer than the recordings. To get it right I measured it with sine sweeps deconvolved against a dry reference and kept fixing what the measurements showed, until it behaved the way I wanted. I learned more from that than from any tutorial.</p>
       <p>The <em>elsewhere</em> page is the creative side, and its core is SPETTRO, a modal engine. It analyses the impulse response once, extracts its resonant modes (the frequencies the room rings at, each with its own decay) and resynthesises the space from a subset of them. MEMORIA sets how many modes survive: at zero the room is intact; as it rises the space loses resolution, the remaining modes drift in frequency, and at the top only a handful are left and the reverb settles into a sustained harmonic chord, still derived from the place it came from. RICORDO reseeds the drift, so each press gives a different version of the same room. Decay changes how long the tail lasts; SPETTRO changes what it's made of. On top of that, elsewhere adds a reverse mode, two distortion stages on the wet signal, one analogue-style and one digital, and a granular delay with grain size, density and feedback.</p>
+      <div class="shots two">
+        <figure><a href="photos/spazi-memoria-zero.jpg" target="_blank" rel="noopener"><img src="photos/spazi-memoria-zero.jpg" alt="Spazi in elsewhere mode with MEMORIA at zero, the tunnel photo sharp" width="890" height="900" loading="lazy"></a><figcaption>elsewhere on, MEMORIA at zero: the room as recorded, image sharp.</figcaption></figure>
+        <figure><a href="photos/spazi-memoria-up.jpg" target="_blank" rel="noopener"><img src="photos/spazi-memoria-up.jpg" alt="Spazi in elsewhere mode with MEMORIA turned up, the tunnel photo blurred" width="895" height="900" loading="lazy"></a><figcaption>MEMORIA turned up: the room forgets itself, and the image blurs with it.</figcaption></figure>
+      </div>
       <div class="controls">
         <span>Mix</span><span>Size</span><span>Brightness</span><span>Darkness</span><span>Decay</span><span>Output</span><span class="warm">elsewhere</span><span class="warm">SPETTRO</span>
       </div>
       <div class="btns">
         <a class="btn primary" href="https://drive.google.com/file/d/1aQY4L49k_m8oQTJ6puHXGDbJcPY635Ss/view" target="_blank" rel="noopener">Demo video</a>
-        <a class="btn" href="https://drive.google.com/file/d/1M8XugErvSbuLvl6KqQIaudwghwZmRCl2/view" target="_blank" rel="noopener">Presentation (PDF)</a>
+        <a class="btn" href="spazi-presentation.pdf" target="_blank" rel="noopener">Presentation (PDF)</a>
       </div>
       <div>
         <h3>Some of the places</h3>
@@ -172,7 +192,7 @@
           <div class="place"><div><b>Carsulae</b>, pedestrian underpass<br><span class="muted">The concrete underpass that leads to the Roman site.</span></div></div>
         </div>
       </div>
-      <p class="muted">Alongside Spazi I'm working on a series of sample-based instruments that share an engine I wrote from scratch (varispeed playback, a grain stretcher), a delay built around birdsong called Upupa, and a couple of stranger things still in progress.</p>
+      <p class="muted">Alongside Spazi I'm working on a series of sample-based instruments that share an engine I wrote from scratch (varispeed playback, a grain stretcher), a delay built around birdsong called Lek, and a couple of stranger things still in progress.</p>
     </div>
   </div>
   <div class="project" id="songs">
@@ -215,18 +235,17 @@
         </div>
         <div class="item">
           <h3>Dive</h3>
-          <p>BBC New Creatives, 2019, for BBC Arts, BBC Radio 6 and Arts Council England. A binaural piece, so it only really works on headphones. Spatial storytelling with electronic sound design.</p>
+          <p>BBC New Creatives, 2019, for BBC Arts, BBC Radio 6 and Arts Council England. An electronic piece built with sound design and field recordings, some of them recorded binaurally.</p>
           <div class="btns"><a class="btn" href="https://matthewfortunati.bandcamp.com/track/dive-new-creatives-project-bbc-arts-and-arts-council-england" target="_blank" rel="noopener">Listen on Bandcamp</a></div>
           <span class="status">headphones recommended</span>
         </div>
       </div>
       <ul>
-        <li><b>La Morte a Venezia</b>, Marche Teatro, directed by Liv Ferracchiati (2024–25): sound design and front-of-house for the national tour, including Piccolo Teatro in Milan and Teatro Bellini in Naples.</li>
-        <li><b>So Perfect It Frightens Me</b>, a short film by Alice Cornelia for BBC Arts (2020): original music and sound design; selected for the London Short Film Festival.</li>
-        <li><b>Is There Anybody Out There?</b> by Jim Cartwright, directed by Anthony Banks (2019): sound design.</li>
-        <li><b>Il Gabbiano</b>, Teatro Stabile dell'Umbria, directed by Leonardo Lidi (2023): trailer soundtrack.</li>
-        <li><b>Wild Latitude</b>, Sky TV Italia with Tumulto Video (2018): soundtrack.</li>
-        <li><b>Underwater</b>, a fashion campaign for Ragno (2024): soundtrack, produced with Marta Del Grandi.</li>
+        <li><a class="title" href="https://www.youtube.com/watch?v=P58Zlip8XB4" target="_blank" rel="noopener">La Morte a Venezia</a>, Marche Teatro, directed by Liv Ferracchiati (2024–25): sound design and front-of-house for the national tour, including Piccolo Teatro in Milan and Teatro Bellini in Naples.</li>
+        <li><a class="title" href="https://www.alicecornelia.com/so-perfect-it-frightens-me" target="_blank" rel="noopener">So Perfect It Frightens Me</a>, a short film by Alice Cornelia for BBC Arts (2020): original music and sound design; selected for the London Short Film Festival.</li>
+        <li><a class="title" href="https://www.youtube.com/watch?v=C3DAlgvhGbk" target="_blank" rel="noopener">Il Gabbiano</a>, Teatro Stabile dell'Umbria, directed by Leonardo Lidi (2023): trailer soundtrack.</li>
+        <li><a class="title" href="https://www.youtube.com/watch?v=UoLhwEzCfHU" target="_blank" rel="noopener">Wild Latitude</a>, Sky TV Italia with Tumulto Video (2018): soundtrack.</li>
+        <li><a class="title" href="https://www.youtube.com/watch?v=vzPDZ7R72E4" target="_blank" rel="noopener">Underwater</a>, a fashion campaign for Ragno (2024): soundtrack, produced with Marta Del Grandi.</li>
       </ul>
     </div>
   </div>
@@ -236,7 +255,7 @@
       <h2>Front of house</h2>
     </div>
     <div class="content">
-      <p>Mixing live is where I come from, and still where I spend a lot of my nights. A different room every evening is the best ear training I know.</p>
+      <p>Mixing live is where I come from, and still where I spend a lot of my nights.</p>
       <figure class="photo">
         <img src="photos/foh.jpg" alt="Matthew at a laptop on a flight case, backstage in a theatre, with an in-ear monitor in" width="1616" height="1080">
       </figure>
