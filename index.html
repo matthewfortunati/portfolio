@@ -51,11 +51,11 @@
   .wrap { max-width: 1100px; margin: 0 auto; padding-inline: clamp(16px, 4vw, 48px); padding-block: 0 72px; }
 
   h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.05; }
-  h1 { font-size: clamp(2.4rem, 6.5vw, 4.6rem); font-weight: 700; letter-spacing: -0.02em; font-variation-settings: "opsz" 96; }
+  h1 { font-size: clamp(2.2rem, 5.2vw, 3.4rem); font-weight: 700; letter-spacing: -0.02em; font-variation-settings: "opsz" 96; }
   h2 { font-size: clamp(1.7rem, 3.4vw, 2.4rem); font-weight: 600; letter-spacing: -0.015em; }
   h3 { font-size: 1.25rem; font-weight: 600; }
   p { margin: 0; max-width: 65ch; }
-  .lead { font-size: 1.22rem; line-height: 1.5; max-width: 38ch; }
+  .lead { font-size: 1.18rem; line-height: 1.5; max-width: 46ch; }
   .muted { color: var(--fg-2); }
   .eyebrow { font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-2); }
   .mono { font-family: var(--mono); font-size: 0.86rem; font-variant-numeric: tabular-nums; }
@@ -66,8 +66,10 @@
   .top nav a { font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.04em; text-decoration: none; color: var(--fg-2); }
   .top nav a:hover { color: var(--accent); }
 
-  .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 32px 48px; align-items: end; padding-block: 60px 44px; }
-  .hero .intro { display: grid; gap: 20px; }
+  .hero { display: grid; gap: 30px; padding-block: 52px 44px; }
+  .hero .intro { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 18px 56px; align-items: end; }
+  .hero .intro .eyebrow { grid-column: 1 / -1; }
+  .hero .side { display: grid; gap: 18px; justify-items: start; }
   .photo { margin: 0; min-width: 0; }
   .photo img { width: 100%; max-width: 100%; height: auto; display: block; }
   .photo figcaption { font-family: var(--mono); font-size: 0.76rem; color: var(--fg-2); margin-top: 8px; line-height: 1.5; }
@@ -122,7 +124,8 @@
   footer { padding-block: 40px 0; border-top: 1px solid var(--line); font-size: 0.9rem; color: var(--fg-2); display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
 
   @media (max-width: 860px) {
-    .hero { grid-template-columns: minmax(0, 1fr); align-items: start; padding-block: 44px 36px; }
+    .hero { gap: 24px; padding-block: 40px 36px; }
+    .hero .intro { grid-template-columns: minmax(0, 1fr); }
     .project, .about { grid-template-columns: minmax(0, 1fr); gap: 16px; padding-block: 40px; }
     .project .rail { position: static; }
     .place { grid-template-columns: minmax(0, 1fr); }
@@ -147,14 +150,16 @@
     <div class="intro">
       <div class="eyebrow">Selected projects</div>
       <h1>Sound engineer and composer. Lately, plugins.</h1>
-      <p class="lead">I'm Matthew, from a small town in Umbria. I mix concerts, write music for radio and theatre, and for the past year I've been recording real places and turning them into a reverb plugin. Here's some of the work I like most.</p>
-      <div class="btns">
-        <a class="btn primary" href="https://drive.google.com/file/d/1aQY4L49k_m8oQTJ6puHXGDbJcPY635Ss/view" target="_blank" rel="noopener">Watch the Spazi demo</a>
+      <div class="side">
+        <p class="lead">I'm Matthew, from a small town in Umbria. I mix concerts, write music for radio and theatre, and for the past year I've been recording real places and turning them into a reverb plugin. Here's some of the work I like most.</p>
+        <div class="btns">
+          <a class="btn primary" href="https://drive.google.com/file/d/1aQY4L49k_m8oQTJ6puHXGDbJcPY635Ss/view" target="_blank" rel="noopener">Watch the Spazi demo</a>
+        </div>
       </div>
     </div>
     <figure class="photo hero-photo">
       <img src="photos/theatre-ir.jpg" alt="Matthew kneeling on the stage of an empty Italian-style theatre, next to a dodecahedral loudspeaker on a stand and a laptop, recording an impulse response" width="1616" height="1080">
-      <figcaption>Recording an impulse response for Spazi: a dodecahedral speaker on stage, the theatre empty, one hour of silence.</figcaption>
+      <figcaption>Recording an impulse response for Spazi: a dodecahedral speaker on stage, the theatre empty.</figcaption>
     </figure>
   </div>
   <div class="project" id="spazi">
