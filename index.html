@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Matthew Fortunati · Sound engineer and composer</title>
+<meta name="description" content="Sound engineer and composer based in Umbria, Italy. Spazi, a convolution reverb built from real places; songs with Marta Del Grandi; music for BBC Radio 4 and theatre; live sound.">
+<meta name="author" content="Matthew Fortunati">
+<link rel="canonical" href="https://matthewfortunati.github.io/portfolio/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://matthewfortunati.github.io/portfolio/">
+<meta property="og:image" content="https://matthewfortunati.github.io/portfolio/photos/theatre-ir.jpg">
+<meta property="og:image:width" content="1616">
+<meta property="og:image:height" content="1080">
+<meta property="og:image:alt" content="Recording an impulse response on the stage of an empty Italian theatre">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:title" content="Matthew Fortunati · Sound engineer and composer">
+<meta property="og:description" content="Sound engineer and composer based in Umbria, Italy. Spazi, a convolution reverb built from real places; songs with Marta Del Grandi; music for BBC Radio 4 and theatre; live sound.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23171b19'/%3E%3Ccircle cx='32' cy='32' r='14' fill='none' stroke='%235cc4b8' stroke-width='5'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #eceeea;
+    --bg-2: #e0e4de;
+    --fg: #171b19;
+    --fg-2: #4f5753;
+    --line: #c7cec6;
+    --accent: #1e6b66;
+    --accent-ink: #ffffff;
+    --warm: #a8622a;
+    --display: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+    --body: "Newsreader", Georgia, "Times New Roman", serif;
+    --mono: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #101412; --bg-2: #181d1a; --fg: #e5e9e4; --fg-2: #9ca69f; --line: #2b332e;
+      --accent: #5cc4b8; --accent-ink: #0f1513; --warm: #d9a066; color-scheme: dark;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  img { max-width: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 1.06rem; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding-inline: clamp(16px, 4vw, 48px); padding-block: 0 72px; }
+
+  h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.05; }
+  h1 { font-size: clamp(2.4rem, 6.5vw, 4.6rem); font-weight: 700; letter-spacing: -0.02em; font-variation-settings: "opsz" 96; }
+  h2 { font-size: clamp(1.7rem, 3.4vw, 2.4rem); font-weight: 600; letter-spacing: -0.015em; }
+  h3 { font-size: 1.25rem; font-weight: 600; }
+  p { margin: 0; max-width: 65ch; }
+  .lead { font-size: 1.22rem; line-height: 1.5; max-width: 38ch; }
+  .muted { color: var(--fg-2); }
+  .eyebrow { font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-2); }
+  .mono { font-family: var(--mono); font-size: 0.86rem; font-variant-numeric: tabular-nums; }
+
+  .top { display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: baseline; justify-content: space-between; padding-block: 22px 0; }
+  .top .brand { font-family: var(--display); font-weight: 700; letter-spacing: -0.01em; }
+  .top nav { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+  .top nav a { font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.04em; text-decoration: none; color: var(--fg-2); }
+  .top nav a:hover { color: var(--accent); }
+
+  .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 32px 48px; align-items: end; padding-block: 60px 44px; }
+  .hero .intro { display: grid; gap: 20px; }
+  .photo { margin: 0; min-width: 0; }
+  .photo img { width: 100%; max-width: 100%; height: auto; display: block; }
+  .photo figcaption { font-family: var(--mono); font-size: 0.76rem; color: var(--fg-2); margin-top: 8px; line-height: 1.5; }
+  @media (max-width: 640px) { }
+
+  .project { display: grid; grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.65fr); gap: 20px 56px; padding-block: 44px; border-top: 1px solid var(--line); }
+  .project .rail { display: grid; gap: 10px; align-content: start; position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; }
+  .project .rail .meta { font-family: var(--mono); font-size: 0.8rem; color: var(--fg-2); line-height: 1.5; }
+  .content { display: grid; gap: 22px; min-width: 0; }
+  .content p { max-width: 62ch; }
+
+  .btns { display: flex; flex-wrap: wrap; gap: 10px; }
+  .btn { display: inline-block; font-family: var(--display); font-weight: 600; font-size: 0.95rem; padding: 10px 16px; border-radius: 999px; text-decoration: none; border: 1px solid var(--accent); color: var(--accent); background: transparent; cursor: pointer; }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); }
+  .btn:hover { filter: brightness(1.08); }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; }
+  .controls span { font-family: var(--mono); font-size: 0.8rem; border: 1px solid var(--line); border-radius: 4px; padding: 4px 9px; }
+  .controls span.warm { border-color: var(--warm); color: var(--warm); }
+
+  .places { display: grid; gap: 0; margin-top: 12px; border-top: 1px solid var(--line); }
+  .place { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 4px 18px; padding-block: 10px; border-bottom: 1px solid var(--line); font-size: 0.98rem; }
+  .place b { font-family: var(--display); font-weight: 600; }
+
+  .media { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .item { background: var(--bg-2); padding: 18px 18px 20px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+  .item h3 { font-size: 1.15rem; }
+  .item p { font-size: 0.98rem; }
+  .item .status { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg-2); }
+
+  ul { margin: 0; padding-left: 1.1em; max-width: 62ch; }
+  li + li { margin-top: 6px; }
+
+  .about { display: grid; grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.65fr); gap: 20px 56px; padding-block: 48px; border-top: 1px solid var(--line); }
+  .contact { display: grid; gap: 14px; min-width: 0; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .row code { font-family: var(--mono); font-size: 0.95rem; background: var(--bg-2); padding: 6px 10px; border-radius: 4px; user-select: all; }
+  .copy { font-family: var(--mono); font-size: 0.78rem; padding: 6px 10px; border: 1px solid var(--line); background: transparent; color: var(--fg); border-radius: 4px; cursor: pointer; }
+  .copy[data-done="1"] { border-color: var(--accent); color: var(--accent); }
+  footer { padding-block: 40px 0; border-top: 1px solid var(--line); font-size: 0.9rem; color: var(--fg-2); display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: minmax(0, 1fr); align-items: start; padding-block: 44px 36px; }
+    .project, .about { grid-template-columns: minmax(0, 1fr); gap: 16px; padding-block: 40px; }
+    .project .rail { position: static; }
+    .place { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">Matthew Fortunati</div>
+    <nav aria-label="Sections">
+      <a href="#spazi">Spazi</a>
+      <a href="#songs">Songs</a>
+      <a href="#media">Composition for media</a>
+      <a href="#live">Live</a>
+      <a href="#about">About</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="intro">
+      <div class="eyebrow">Selected projects</div>
+      <h1>Sound engineer and composer. Lately, plugins.</h1>
+      <p class="lead">I'm Matthew, from a small town in Umbria. I mix concerts, write music for radio and theatre, and for the past year I've been recording real places and turning them into a reverb plugin. Here's some of the work I like most.</p>
+      <div class="btns">
+        <a class="btn primary" href="https://drive.google.com/file/d/1aQY4L49k_m8oQTJ6puHXGDbJcPY635Ss/view" target="_blank" rel="noopener">Watch the Spazi demo</a>
+      </div>
+    </div>
+    <figure class="photo hero-photo">
+      <img src="photos/theatre-ir.jpg" alt="Matthew kneeling on the stage of an empty Italian-style theatre, next to a dodecahedral loudspeaker on a stand and a laptop, recording an impulse response" width="1616" height="1080">
+      <figcaption>Recording an impulse response for Spazi: a dodecahedral speaker on stage, the theatre empty, one hour of silence.</figcaption>
+    </figure>
+  </div>
+  <div class="project" id="spazi">
+    <div class="rail">
+      <div class="eyebrow">01 · Plugin</div>
+      <h2>Spazi</h2>
+      <div class="meta">Convolution reverb<br>C++ · JUCE · CMake<br>VST3 · AU · Standalone<br>2025–2026</div>
+    </div>
+    <div class="content">
+      <p>Spazi is a convolution reverb I've been building on my own. The idea is simple: instead of simulating a room, every preset is a real place I went to and recorded myself, and the photos I took there travel with the preset.</p>
+      <p>I write the code in C++ with JUCE, and I'll admit the engine took longer than the recordings. To get it right I measured it with sine sweeps deconvolved against a dry reference and kept fixing what the measurements showed, until it behaved the way I wanted. I learned more from that than from any tutorial.</p>
+      <p>The <em>elsewhere</em> page is the creative side, and its core is SPETTRO, a modal engine. It analyses the impulse response once, extracts its resonant modes (the frequencies the room rings at, each with its own decay) and resynthesises the space from a subset of them. MEMORIA sets how many modes survive: at zero the room is intact; as it rises the space loses resolution, the remaining modes drift in frequency, and at the top only a handful are left and the reverb settles into a sustained harmonic chord, still derived from the place it came from. RICORDO reseeds the drift, so each press gives a different version of the same room. Decay changes how long the tail lasts; SPETTRO changes what it's made of. On top of that, elsewhere adds a reverse mode, two distortion stages on the wet signal, one analogue-style and one digital, and a granular delay with grain size, density and feedback.</p>
+      <div class="controls">
+        <span>Mix</span><span>Size</span><span>Brightness</span><span>Darkness</span><span>Decay</span><span>Output</span><span class="warm">elsewhere</span><span class="warm">SPETTRO</span>
+      </div>
+      <div class="btns">
+        <a class="btn primary" href="https://drive.google.com/file/d/1aQY4L49k_m8oQTJ6puHXGDbJcPY635Ss/view" target="_blank" rel="noopener">Demo video</a>
+        <a class="btn" href="https://drive.google.com/file/d/1M8XugErvSbuLvl6KqQIaudwghwZmRCl2/view" target="_blank" rel="noopener">Presentation (PDF)</a>
+      </div>
+      <div>
+        <h3>Some of the places</h3>
+        <p class="muted">Recorded with a dodecahedron and two omnidirectional microphones.</p>
+        <div class="places">
+          <div class="place"><div><b>Tempio di Santa Maria della Consolazione</b>, Todi<br><span class="muted">Renaissance temple on a Greek-cross plan, a dome about 50 m high. Recorded with the permission of La Consolazione E.T.A.B.</span></div></div>
+          <div class="place"><div><b>Teatro del Pavone</b>, Perugia<br><span class="muted">An 18th-century theatre with four tiers of boxes, recorded from the centre of the hall.</span></div></div>
+          <div class="place"><div><b>Ex Train Tunnel</b>, Narni–Stifone<br><span class="muted">A disused railway tunnel in the Nera gorge.</span></div></div>
+          <div class="place"><div><b>Carsulae</b>, pedestrian underpass<br><span class="muted">The concrete underpass that leads to the Roman site.</span></div></div>
+        </div>
+      </div>
+      <p class="muted">Alongside Spazi I'm working on a series of sample-based instruments that share an engine I wrote from scratch (varispeed playback, a grain stretcher), a delay built around birdsong called Upupa, and a couple of stranger things still in progress.</p>
+    </div>
+  </div>
+  <div class="project" id="songs">
+    <div class="rail">
+      <div class="eyebrow">02 · Songs</div>
+      <h2>Writing and producing</h2>
+      <div class="meta">With Marta Del Grandi<br>Fire Records</div>
+    </div>
+    <div class="content">
+      <div class="media">
+        <div class="item">
+          <h3>Stones</h3>
+          <p>Matthew Fortunati and Marta Del Grandi. I wrote, recorded and produced the whole track, start to finish. Probably the song of mine I'd play you first.</p>
+          <div class="btns"><a class="btn primary" href="https://www.youtube.com/watch?v=kMgKYrUO6gs" target="_blank" rel="noopener">Watch on YouTube</a></div>
+        </div>
+        <div class="item">
+          <h3>The Best Sea</h3>
+          <p>Marta Del Grandi, Fire Records, 2024. I produced and mixed it and played piano on it. It came out ahead of her UK and Italian tour.</p>
+          <div class="btns">
+            <a class="btn" href="https://martadelgrandi.bandcamp.com/track/the-best-sea" target="_blank" rel="noopener">Listen on Bandcamp</a>
+            <a class="btn" href="https://www.firerecords.com/marta-del-grandi-reveals-new-song-the-best-sea-watch-video-out-now/" target="_blank" rel="noopener">Fire Records</a>
+          </div>
+        </div>
+      </div>
+      <p class="muted">I've also released an album and two EPs under my own name; they're on <a href="https://matthewfortunati.bandcamp.com" target="_blank" rel="noopener">Bandcamp</a>.</p>
+    </div>
+  </div>
+  <div class="project" id="media">
+    <div class="rail">
+      <div class="eyebrow">03 · Composition for media</div>
+      <h2>Radio, film, theatre</h2>
+      <div class="meta">BBC Radio 4 · BBC Radio 6<br>Sky TV Italia · Marche Teatro<br>Teatro Stabile dell'Umbria</div>
+    </div>
+    <div class="content">
+      <div class="media">
+        <div class="item">
+          <h3>Karin and Andrew</h3>
+          <p>BBC Radio 4, 2020–21. I composed and mixed the music for this radio drama: themes, ambiences and the small cues in between, working with the writers and producers on the tone of each scene.</p>
+          <div class="btns"><a class="btn" href="https://matthewfortunati.bandcamp.com/track/bbc-radio-4-karin-and-andrew-2" target="_blank" rel="noopener">Listen on Bandcamp</a></div>
+        </div>
+        <div class="item">
+          <h3>Dive</h3>
+          <p>BBC New Creatives, 2019, for BBC Arts, BBC Radio 6 and Arts Council England. A binaural piece, so it only really works on headphones. Spatial storytelling with electronic sound design.</p>
+          <div class="btns"><a class="btn" href="https://matthewfortunati.bandcamp.com/track/dive-new-creatives-project-bbc-arts-and-arts-council-england" target="_blank" rel="noopener">Listen on Bandcamp</a></div>
+          <span class="status">headphones recommended</span>
+        </div>
+      </div>
+      <ul>
+        <li><b>La Morte a Venezia</b>, Marche Teatro, directed by Liv Ferracchiati (2024–25): sound design and front-of-house for the national tour, including Piccolo Teatro in Milan and Teatro Bellini in Naples.</li>
+        <li><b>So Perfect It Frightens Me</b>, a short film by Alice Cornelia for BBC Arts (2020): original music and sound design; selected for the London Short Film Festival.</li>
+        <li><b>Is There Anybody Out There?</b> by Jim Cartwright, directed by Anthony Banks (2019): sound design.</li>
+        <li><b>Il Gabbiano</b>, Teatro Stabile dell'Umbria, directed by Leonardo Lidi (2023): trailer soundtrack.</li>
+        <li><b>Wild Latitude</b>, Sky TV Italia with Tumulto Video (2018): soundtrack.</li>
+        <li><b>Underwater</b>, a fashion campaign for Ragno (2024): soundtrack, produced with Marta Del Grandi.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="project" id="live">
+    <div class="rail">
+      <div class="eyebrow">04 · Live</div>
+      <h2>Front of house</h2>
+    </div>
+    <div class="content">
+      <p>Mixing live is where I come from, and still where I spend a lot of my nights. A different room every evening is the best ear training I know.</p>
+      <figure class="photo">
+        <img src="photos/foh.jpg" alt="Matthew at a laptop on a flight case, backstage in a theatre, with an in-ear monitor in" width="1616" height="1080">
+      </figure>
+      <div class="media">
+        <div class="item">
+          <h3>La Morte a Venezia on Rai Cultura</h3>
+          <p>I was the QLab operator and front-of-house engineer on this Marche Teatro production, directed by Liv Ferracchiati, and Rai filmed it. If you want to hear how the show sounded in the room, this is the closest thing.</p>
+          <div class="btns"><a class="btn" href="https://www.raicultura.it/teatro-e-danza/eventi/La-morte-a-Venezia-c5d5b3e3-35e3-4d8f-9be3-a05349821fe4.html" target="_blank" rel="noopener">Watch on Rai Cultura</a></div>
+        </div>
+        <div class="item">
+          <h3>On tour</h3>
+          <p>Around 70 shows with Marta Del Grandi on the SELVA Tour, in Italy and the UK. Then Frida Bollani Magoni, Chiara Civello, Alan Sorrenti, Generic Animal and Fabio Celenza, sometimes mixing, sometimes tour-managing, often both.</p>
+          <p>Before that I spent three summers as technical manager of the Baravai Festival, in the Roman amphitheatre of Terni, where I was the point of contact for the visiting productions, from their riders to show night. I learned the job partly there and partly in Manchester, where I started out as a freelance sound engineer straight after university, between studios and small venues.</p>
+        </div>
+      </div>
+      <p class="muted mono">DiGiCo · Yamaha CL/QL · Allen &amp; Heath SQ/dLive · Midas · Behringer Wing · Smaart · Dante Level 3 · AES50 · AVB · QLab</p>
+    </div>
+  </div>
+  <div class="about" id="about">
+    <div class="rail">
+      <div class="eyebrow">About</div>
+      <h2>Bio</h2>
+    </div>
+    <div class="contact">
+      <p>I studied Creative Music Technology at the University of Salford in Manchester and then did a master's in composition for film at the Liceu conservatory in Barcelona. I grew up between English and Italian, speak decent Spanish, and I'm slowly learning Chinese. Italian and US citizen.</p>
+      <p>Away from the desk I like hiking, cycling and manga, and I volunteer with Wild Umbria, a wildlife rescue and conservation group here in Umbria.</p>
+      <div class="row"><code id="email">matthewfortunati@gmail.com</code><button class="copy" type="button" data-copy="email" id="copy-email">copy</button></div>
+      <div class="row"><code id="phone">+39 328 829 7250</code><button class="copy" type="button" data-copy="phone" id="copy-phone">copy</button></div>
+      <div class="row">
+        <a href="https://matthewfortunati.bandcamp.com" target="_blank" rel="noopener">Bandcamp</a>
+        <a href="https://www.linkedin.com/in/matthewfortunati/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://linktr.ee/matthewfortunati" target="_blank" rel="noopener">Linktree</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>Matthew Fortunati · San Gemini (TR), Italy</span>
+  </footer>
+</div>
+
+<script>
+(function () {
+  document.querySelectorAll('.copy').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var el = document.getElementById(b.getAttribute('data-copy'));
+      var text = el ? el.textContent : '';
+      function done() { b.textContent = 'copied'; b.setAttribute('data-done', '1'); setTimeout(function () { b.textContent = 'copy'; b.removeAttribute('data-done'); }, 1600); }
+      function fallback() { var range = document.createRange(); range.selectNodeContents(el); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range); }
+      if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(done, fallback); } else { fallback(); }
+    });
+  });
+})();
+</script>
+</body>
+</html>
