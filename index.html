@@ -54,6 +54,9 @@
   h1 { font-size: clamp(2.2rem, 5.2vw, 3.4rem); font-weight: 700; letter-spacing: -0.02em; font-variation-settings: "opsz" 96; }
   h2 { font-size: clamp(1.7rem, 3.4vw, 2.4rem); font-weight: 600; letter-spacing: -0.015em; }
   h3 { font-size: 1.25rem; font-weight: 600; }
+  h1, h2 { font-variant-ligatures: no-common-ligatures; }
+  .hw { display: inline-block; white-space: nowrap; }
+  .hl { display: inline-block; text-align: center; }
   p { margin: 0; max-width: 65ch; }
   .lead { font-size: 1.18rem; line-height: 1.5; max-width: 46ch; }
   .muted { color: var(--fg-2); }
@@ -328,6 +331,289 @@
 })();
 
 (function () {
+  // Type that reacts. The headings are set in a variable font: each letter gets a box of fixed width, so its
+  // weight can follow the cursor (and, in the main title, the music) without moving anything around it.
+  // The small mono labels shuffle their letters for a moment. None of this runs with reduced motion.
+  if (!window.matchMedia || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!window.requestAnimationFrame || !document.createRange) return;
+  function each(list, fn) { Array.prototype.forEach.call(list, fn); }
+
+  // ---- mono labels
+
+  var ABC = 'abcdefghijklmnopqrstuvwxyz';
+  function shuffler(el) {
+    var busy = false;
+    return function () {
+      if (busy || /\btranslated-/.test(document.documentElement.className)) return;   // leave translated pages alone
+      busy = true;
+      var text = el.textContent, began = performance.now(), drawn = 0;
+      (function step(now) {
+        var settled = Math.floor((now - began - 120) / 22);         // letters come to rest left to right
+        if (settled >= text.length) { el.textContent = text; busy = false; return; }
+        if (now - drawn > 45) {
+          drawn = now;
+          var out = '';
+          for (var i = 0; i < text.length; i++) {
+            var c = text.charAt(i), low = c.toLowerCase();
+            if (i < settled || low === c.toUpperCase()) out += c;   // already at rest, or not a letter
+            else { var r = ABC.charAt(Math.floor(Math.random() * 26)); out += c === low ? r : r.toUpperCase(); }
+          }
+          el.textContent = out;
+        }
+        requestAnimationFrame(step);
+      })(began);
+    };
+  }
+  each(document.querySelectorAll('.top nav a'), function (a) {
+    var run = shuffler(a);
+    a.setAttribute('aria-label', a.textContent);
+    a.addEventListener('mouseenter', run);
+    a.addEventListener('focus', run);
+  });
+  if (window.IntersectionObserver) {
+    var labels = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        labels.unobserve(en.target);
+        shuffler(en.target)();
+      });
+    }, { threshold: 0.9 });
+    each(document.querySelectorAll('.eyebrow'), function (el) { labels.observe(el); });
+  }
+
+  // ---- headings
+
+  var THIN = 300;                                   // lightest weight in the font file
+  var DEPTH = 0.8;                                  // how far the music can thin a letter
+  var BANDS = 5, LOW_HZ = 60, HIGH_HZ = 2400;       // the title reads the spectrum left to right, low to high
+  var heads = [], spot = { x: 0, y: 0, on: false };
+  var queued = false, awake = false, coasting = false, before = 0;
+  var music = { on: false, mix: 0, node: null, data: null, edge: null, level: [], peak: [], low: [], val: [] };
+
+  function fresh() { for (var b = 0; b < BANDS; b++) { music.level[b] = 0; music.peak[b] = -200; music.low[b] = 200; music.val[b] = 1; } }
+  fresh();
+  document.addEventListener('music', function (e) {
+    var d = e.detail || {}, node = d.meter;
+    if (node && node !== music.node) {
+      var hz = node.context.sampleRate / node.fftSize, edge = [];
+      for (var b = 0; b <= BANDS; b++) {
+        var k = Math.round(LOW_HZ * Math.pow(HIGH_HZ / LOW_HZ, b / BANDS) / hz);
+        edge.push(b && k <= edge[b - 1] ? edge[b - 1] + 1 : k);
+      }
+      music.node = node; music.edge = edge; music.data = new Float32Array(node.frequencyBinCount);
+    }
+    var on = !!(d.on && music.node);
+    if (on && !music.on) fresh();
+    music.on = on;
+    wake();
+  });
+
+  function listen(dt, heard) {
+    var m = music;
+    m.mix += ((m.on ? 1 : 0) - m.mix) * (1 - Math.exp(-dt / (m.on ? 0.8 : 0.3)));
+    if (!m.on && m.mix < 0.004) m.mix = 0;
+    if (!m.on || !heard) return;
+    m.node.getFloatFrequencyData(m.data);
+    for (var b = 0; b < BANDS; b++) {
+      var sum = 0, from = m.edge[b], to = m.edge[b + 1];
+      for (var k = from; k < to; k++) if (m.data[k] > -160) sum += Math.pow(10, m.data[k] / 10);
+      if (!sum) continue;                                           // nothing coming through yet
+      var db = 10 * Math.log(sum / (to - from)) / Math.LN10;
+      if (m.peak[b] < -150) m.level[b] = db;
+      m.level[b] += (db - m.level[b]) * (1 - Math.exp(-dt / 0.15));
+      // each band is read against its own recent highs and lows, which follow the music slowly
+      m.peak[b] = Math.max(m.level[b], m.peak[b] - 0.6 * dt);
+      m.low[b] = Math.max(m.peak[b] - 30, Math.min(m.level[b], m.low[b] + 0.6 * dt));
+      var raw = Math.max(0, 1 - (m.peak[b] - m.level[b]) / Math.max(9, m.peak[b] - m.low[b]));
+      m.val[b] += (raw - m.val[b]) * (1 - Math.exp(-dt / (raw > m.val[b] ? 0.2 : 0.6)));
+    }
+  }
+
+  function variable(el) {
+    var probe = document.createElement('span'), wide;
+    probe.textContent = 'Hamburgefons';
+    probe.style.cssText = 'position:absolute;left:-99em;top:0;white-space:nowrap;font-size:64px;font-variation-settings:"wght" 300';
+    el.appendChild(probe);
+    wide = probe.getBoundingClientRect().width;
+    probe.style.fontVariationSettings = '"wght" 800';
+    wide = Math.abs(probe.getBoundingClientRect().width - wide);
+    el.removeChild(probe);
+    return wide > 2;
+  }
+
+  function split(el, live) {
+    var node = el.firstChild;
+    if (!node || node.nodeType !== 3 || el.childNodes.length !== 1) return;
+    var style = getComputedStyle(el), size = parseFloat(style.fontSize), extra = style.fontVariationSettings;
+    var rest = parseInt(style.fontWeight, 10) || 700, text = node.nodeValue;
+    var range = document.createRange(), holder = document.createElement('span'), word = null, i;
+    var h = { el: el, live: live, rest: rest, pre: extra && extra !== 'normal' ? extra + ', ' : '',
+              letters: [], x: [], y: [], dip: [], shown: [], em: size, from: 0, wide: 1, seen: false, met: false, wave: 0 };
+    var run = [], own = [];
+    for (i = 0; i < text.length; i++) {
+      var c = text.charAt(i);
+      if (/\s/.test(c)) {
+        if (word) { holder.appendChild(document.createTextNode(' ')); word = null; }
+        continue;
+      }
+      range.setStart(node, i);
+      range.setEnd(node, i + 1);
+      run.push(range.getBoundingClientRect().width);                // the space the letter takes in the running text
+      if (!word) { word = document.createElement('span'); word.className = 'hw'; holder.appendChild(word); }
+      var s = document.createElement('span');
+      s.className = 'hl';
+      s.textContent = c;
+      word.appendChild(s);
+      h.letters.push(s); h.dip.push(0); h.shown.push(rest);
+    }
+    holder.setAttribute('aria-hidden', 'true');
+    holder.setAttribute('translate', 'no');
+    holder.className = 'notranslate';
+    el.setAttribute('aria-label', text.replace(/\s+/g, ' ').replace(/^ | $/g, ''));
+    el.textContent = '';
+    el.appendChild(holder);
+    for (i = 0; i < h.letters.length; i++) own.push(h.letters[i].getBoundingClientRect().width);
+    for (i = 0; i < h.letters.length; i++) {
+      h.letters[i].style.width = (own[i] / size).toFixed(4) + 'em';                                       // its own width, fixed
+      if (Math.abs(run[i] - own[i]) > 0.02) h.letters[i].style.marginRight = ((run[i] - own[i]) / size).toFixed(4) + 'em';   // kerning
+    }
+    heads.push(h);
+  }
+
+  function measure(h) {
+    var box = h.el.getBoundingClientRect(), left = Infinity, right = -Infinity;
+    h.em = parseFloat(getComputedStyle(h.el).fontSize) || h.em;
+    for (var i = 0; i < h.letters.length; i++) {
+      var r = h.letters[i].getBoundingClientRect();
+      h.x[i] = r.left + r.width / 2 - box.left;
+      h.y[i] = r.top + r.height / 2 - box.top;
+      if (r.left < left) left = r.left;
+      if (r.right > right) right = r.right;
+    }
+    h.from = left - box.left;
+    h.wide = Math.max(1, right - left);
+  }
+
+  function still(h) {
+    h.wave = 0;
+    for (var i = 0; i < h.letters.length; i++) {
+      h.dip[i] = 0;
+      if (h.shown[i] !== h.rest) { h.shown[i] = h.rest; h.letters[i].style.fontVariationSettings = ''; }
+    }
+  }
+
+  function wake() {
+    if (queued) return;
+    queued = true;
+    if (!awake) { awake = true; before = performance.now(); }
+    requestAnimationFrame(frame);
+  }
+
+  function frame(now) {
+    queued = false;
+    var dt = (now - before) / 1000;
+    if (coasting && dt < 0.045) { wake(); return; }                 // with only the music to follow, 20 frames a second are plenty
+    before = now;
+    dt = Math.min(0.1, Math.max(0, dt));
+
+    var heard = false, busy = false;
+    heads.forEach(function (h) { if (h.live && h.seen) heard = true; });
+    listen(dt, heard);
+
+    heads.forEach(function (h) {
+      if (!h.seen) { still(h); return; }
+      var box = null, near = false, front = 0, soft = h.em * 1.1, reach = h.em * 1.3;
+      if (spot.on) {
+        box = h.el.getBoundingClientRect();
+        near = spot.x > box.left - 3 * reach && spot.x < box.right + 3 * reach && spot.y > box.top - 3 * reach && spot.y < box.bottom + 3 * reach;
+      }
+      if (h.wave) {
+        front = (now - h.wave) / 1000 * 11 * h.em - 2.5 * soft;     // a wave crosses the heading once, the first time it is seen
+        if (front > h.wide + 2.5 * soft) h.wave = 0; else busy = true;
+      }
+      var tuned = h.live && music.mix > 0;
+      for (var i = 0; i < h.letters.length; i++) {
+        var want = 0;
+        if (near) {
+          var dx = spot.x - box.left - h.x[i], dy = spot.y - box.top - h.y[i];
+          want = Math.exp(-(dx * dx + dy * dy) / (2 * reach * reach));
+        }
+        if (h.wave) {
+          var q = (h.x[i] - h.from - front) / soft;
+          want = Math.max(want, 0.85 * Math.exp(-q * q / 2));
+        }
+        var d = h.dip[i];
+        d += (want - d) * (1 - Math.exp(-dt / (want > d ? 0.07 : 0.4)));   // quick to thin, slow to come back
+        if (d < 0.004 && want < 0.004) d = 0;
+        if (Math.abs(want - d) > 0.004) busy = true;
+        h.dip[i] = d;
+        if (tuned) {
+          var p = (h.x[i] - h.from) / h.wide * (BANDS - 1);
+          var b = Math.min(BANDS - 2, Math.max(0, Math.floor(p))), f = p - b;
+          var v = music.val[b] + (music.val[b + 1] - music.val[b]) * f * f * (3 - 2 * f);
+          d = 1 - (1 - d) * (1 - music.mix * DEPTH * (1 - v));
+        }
+        var weight = h.rest - Math.round((h.rest - THIN) * d / 8) * 8;
+        if (weight !== h.shown[i]) {
+          h.shown[i] = weight;
+          h.letters[i].style.fontVariationSettings = weight === h.rest ? '' : h.pre + '"wght" ' + weight;
+        }
+      }
+    });
+
+    coasting = !busy;
+    if (busy || (heard && (music.on || music.mix > 0))) wake(); else awake = coasting = false;
+  }
+
+  function headings() {
+    var title = document.querySelector('h1');
+    if (heads.length || !title || !window.IntersectionObserver || !variable(title)) return;
+    split(title, true);
+    each(document.querySelectorAll('h2'), function (el) { split(el, false); });
+    heads.forEach(measure);
+
+    var watch = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        heads.forEach(function (h) {
+          if (h.el !== en.target) return;
+          if (en.isIntersecting && !h.seen && h.live) fresh();
+          h.seen = en.isIntersecting;
+          if (h.seen && !h.met && en.intersectionRatio > 0.6) { h.met = true; h.wave = performance.now() + 200; }
+        });
+      });
+      wake();
+    }, { threshold: [0, 0.7] });
+    heads.forEach(function (h) { watch.observe(h.el); });
+
+    window.addEventListener('pointermove', function (e) {
+      if (e.pointerType === 'touch') return;
+      spot.x = e.clientX; spot.y = e.clientY; spot.on = true;
+      coasting = false;
+      wake();
+    }, { passive: true });
+    document.documentElement.addEventListener('mouseleave', function () { spot.on = false; wake(); });
+    window.addEventListener('scroll', function () { if (spot.on) wake(); }, { passive: true });
+    var again = 0;
+    function resized() {
+      clearTimeout(again);
+      again = setTimeout(function () { heads.forEach(measure); wake(); }, 150);
+    }
+    window.addEventListener('resize', resized);
+    if (window.ResizeObserver) {
+      var sizes = new ResizeObserver(resized);
+      heads.forEach(function (h) { sizes.observe(h.el); });
+    }
+  }
+
+  var first = document.querySelector('h1');
+  if (first && document.fonts && document.fonts.load) {
+    var face = getComputedStyle(first);
+    document.fonts.load(face.fontWeight + ' ' + face.fontSize + ' ' + face.fontFamily, first.textContent)
+      .then(function () { requestAnimationFrame(headings); }, function () {});
+  }
+})();
+
+(function () {
   // Quiet background loop. Browsers only allow sound after the visitor has clicked, tapped or pressed a key,
   // so the music starts at the first interaction (or straight away where the browser permits it).
   var btn = document.getElementById('sound');
@@ -339,7 +625,7 @@
   var FILE = 'audio/background.mp3';
   var LOOP_START = 0.5, LOOP_END = 123.5;   // the file carries half a second of extra audio on each side of the loop
   var LEVEL = 0.4;                           // overall volume, 0 to 1
-  var ctx = null, gain = null, source = null, buffer = null, loading = null;
+  var ctx = null, gain = null, meter = null, source = null, buffer = null, loading = null;
   var playing = false, pausedByHide = false, wanted = true;
   try { if (localStorage.getItem('sound') === 'off') wanted = false; } catch (e) {}
 
@@ -348,6 +634,8 @@
     btn.classList.toggle('on', playing);
     btn.setAttribute('aria-pressed', playing ? 'true' : 'false');
     label.textContent = playing ? 'sound on' : 'sound off';
+    // the title listens to the music through this
+    try { document.dispatchEvent(new CustomEvent('music', { detail: { on: playing, meter: meter } })); } catch (e) {}
   }
   function setup() {
     if (ctx) return;
@@ -355,6 +643,12 @@
     gain = ctx.createGain();
     gain.gain.value = 0;
     gain.connect(ctx.destination);
+    if (ctx.createAnalyser) {
+      meter = ctx.createAnalyser();          // sits before the volume, so it reads the music at full level
+      meter.fftSize = 4096;
+      meter.smoothingTimeConstant = 0;
+      meter.connect(gain);
+    }
   }
   function load() {
     if (!loading) {
@@ -385,7 +679,7 @@
           source.loop = true;
           source.loopStart = LOOP_START;
           source.loopEnd = LOOP_END;
-          source.connect(gain);
+          source.connect(meter || gain);
           source.start(0, LOOP_START);
         }
         fade(LEVEL, 3);
