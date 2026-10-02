@@ -142,8 +142,17 @@
   .sound.on .bars i:nth-child(2) { animation-delay: -0.5s; }
   .sound.on .bars i:nth-child(3) { animation-delay: -0.9s; }
   @keyframes sound-bar { 0%, 100% { transform: scaleY(0.35); } 50% { transform: scaleY(1); } }
-  @media (max-width: 600px) { .sound { padding: 10px 11px; } .sound span:last-child { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; } }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } .sound.on .bars i { animation: none; transform: scaleY(0.7); } }
+  .dot { position: fixed; left: 0; top: 0; z-index: 60; width: 0; height: 0; pointer-events: none; mix-blend-mode: difference; opacity: 0; transition: opacity 0.2s; }
+  .dot.on { opacity: 1; }
+  .dot i { position: absolute; left: -22px; top: -22px; width: 44px; height: 44px; border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 1.5px #fff; transform: scale(0.36); transition: transform 0.22s cubic-bezier(0.2, 0.7, 0.2, 1), background-color 0.22s; }
+  .dot.over i { transform: scale(1); background: transparent; }
+  .dot.down i { transform: scale(0.27); }
+  .dot.over.down i { transform: scale(0.84); }
+  html.has-dot, html.has-dot * { cursor: none !important; }
+  @media print { .dot { display: none; } }
+  .sound.wait .bars i { height: 10px; opacity: 0.55; animation: sound-bar 0.7s ease-in-out infinite; }
+  @media (max-width: 600px) { .sound { padding: 13px 14px; } .sound.on span:last-child { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; } }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } .sound.on .bars i, .sound.wait .bars i { animation: none; transform: scaleY(0.7); } }
 </style>
 </head>
 <body>
@@ -585,13 +594,19 @@
     }, { threshold: [0, 0.7] });
     heads.forEach(function (h) { watch.observe(h.el); });
 
-    window.addEventListener('pointermove', function (e) {
-      if (e.pointerType === 'touch') return;
+    // a mouse is followed all the time, a finger only while it is on the screen
+    function point(e) {
+      if (e.pointerType === 'touch' && e.type === 'pointermove' && !spot.on) return;
       spot.x = e.clientX; spot.y = e.clientY; spot.on = true;
       coasting = false;
       wake();
-    }, { passive: true });
-    document.documentElement.addEventListener('mouseleave', function () { spot.on = false; wake(); });
+    }
+    function lift(e) { if (!e.pointerType || e.pointerType === 'touch') { spot.on = false; wake(); } }
+    window.addEventListener('pointermove', point, { passive: true });
+    window.addEventListener('pointerdown', point, { passive: true });
+    window.addEventListener('pointerup', lift, { passive: true });
+    window.addEventListener('pointercancel', lift, { passive: true });
+    document.documentElement.addEventListener('mouseleave', lift);
     window.addEventListener('scroll', function () { if (spot.on) wake(); }, { passive: true });
     var again = 0;
     function resized() {
@@ -614,6 +629,35 @@
 })();
 
 (function () {
+  // A round cursor for people using a mouse. It inverts what is underneath, so it shows on the photos as well.
+  var fine = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  var forced = window.matchMedia && window.matchMedia('(forced-colors: active)').matches;
+  if (!fine || forced || !window.CSS || !CSS.supports || !CSS.supports('mix-blend-mode', 'difference')) return;
+
+  var HOT = 'a, button, summary, label, input, select, textarea, [role="button"]';
+  var root = document.documentElement, dot = document.createElement('div'), shown = false;
+  dot.className = 'dot';
+  dot.setAttribute('aria-hidden', 'true');
+  dot.appendChild(document.createElement('i'));
+  document.body.appendChild(dot);
+
+  function hide() { shown = false; dot.classList.remove('on'); }
+  function move(e) {
+    if (e.pointerType === 'touch') { hide(); return; }
+    dot.style.transform = 'translate3d(' + e.clientX + 'px,' + e.clientY + 'px,0)';
+    if (!shown) { shown = true; dot.classList.add('on'); root.classList.add('has-dot'); }
+  }
+  window.addEventListener(window.PointerEvent ? 'pointermove' : 'mousemove', move, { passive: true });
+  document.addEventListener('mouseover', function (e) {
+    dot.classList.toggle('over', !!(e.target && e.target.closest && e.target.closest(HOT)));
+  });
+  window.addEventListener('mousedown', function () { dot.classList.add('down'); });
+  window.addEventListener('mouseup', function () { dot.classList.remove('down'); });
+  root.addEventListener('mouseleave', hide);
+  window.addEventListener('blur', hide);
+})();
+
+(function () {
   // Quiet background loop. Browsers only allow sound after the visitor has clicked, tapped or pressed a key,
   // so the music starts at the first interaction (or straight away where the browser permits it).
   var btn = document.getElementById('sound');
@@ -624,16 +668,21 @@
 
   var FILE = 'audio/background.mp3';
   var LOOP_START = 0.5, LOOP_END = 123.5;   // the file carries half a second of extra audio on each side of the loop
-  var LEVEL = 0.4;                           // overall volume, 0 to 1
-  var ctx = null, gain = null, meter = null, source = null, buffer = null, loading = null;
+  var SMALL = !!(window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches);   // phones and tablets
+  var LEVEL = SMALL ? 1 : 0.4;               // overall volume, 0 to 1 (small speakers need all of it)
+  // On an iPhone or iPad a page's sound is muted by the silent switch unless the page asks to play like a music app,
+  // which also pauses whatever else is playing. So there the music waits for a tap on the button itself.
+  var session = SMALL && navigator.audioSession ? navigator.audioSession : null;
+  var ctx = null, gain = null, meter = null, entry = null, source = null, file = null, buffer = null, loading = null;
   var playing = false, pausedByHide = false, wanted = true;
   try { if (localStorage.getItem('sound') === 'off') wanted = false; } catch (e) {}
 
   function remember(v) { try { localStorage.setItem('sound', v); } catch (e) {} }
   function render() {
     btn.classList.toggle('on', playing);
+    if (playing) btn.classList.remove('wait');
     btn.setAttribute('aria-pressed', playing ? 'true' : 'false');
-    label.textContent = playing ? 'sound on' : 'sound off';
+    label.textContent = playing ? 'sound on' : SMALL && wanted ? 'tap for sound' : 'sound off';
     // the title listens to the music through this
     try { document.dispatchEvent(new CustomEvent('music', { detail: { on: playing, meter: meter } })); } catch (e) {}
   }
@@ -643,20 +692,38 @@
     gain = ctx.createGain();
     gain.gain.value = 0;
     gain.connect(ctx.destination);
+    var out = gain;
+    if (SMALL && ctx.createBiquadFilter) {
+      // A phone speaker plays almost nothing below a few hundred hertz, which is where most of this piece lives.
+      // Drop the lows it cannot reproduce and lift the rest, so the music can be heard at all.
+      var cut = ctx.createBiquadFilter(), lift = ctx.createBiquadFilter();
+      cut.type = 'highpass'; cut.frequency.value = 120; cut.Q.value = -3;
+      lift.type = 'highshelf'; lift.frequency.value = 450; lift.gain.value = 12;
+      cut.connect(lift); lift.connect(gain);
+      out = cut;
+    }
     if (ctx.createAnalyser) {
       meter = ctx.createAnalyser();          // sits before the volume, so it reads the music at full level
       meter.fftSize = 4096;
       meter.smoothingTimeConstant = 0;
-      meter.connect(gain);
+      meter.connect(out);
     }
+    entry = meter || out;
+  }
+  function download() {
+    if (!file) {
+      file = fetch(FILE)
+        .then(function (r) { if (!r.ok) throw new Error('audio ' + r.status); return r.arrayBuffer(); })
+        .catch(function (err) { file = null; throw err; });
+    }
+    return file;
   }
   function load() {
     if (!loading) {
-      loading = fetch(FILE)
-        .then(function (r) { if (!r.ok) throw new Error('audio ' + r.status); return r.arrayBuffer(); })
+      loading = download()
         .then(function (data) { return new Promise(function (ok, fail) { ctx.decodeAudioData(data, ok, fail); }); })
         .then(function (decoded) { buffer = decoded; })
-        .catch(function (err) { loading = null; throw err; });
+        .catch(function (err) { loading = file = null; throw err; });
     }
     return loading;
   }
@@ -670,7 +737,9 @@
     var resumed = ctx.state === 'running' ? Promise.resolve() : ctx.resume();
     return Promise.resolve(resumed).then(function () {
       if (ctx.state !== 'running') return;          // still blocked: wait for the next interaction
+      if (!buffer) btn.classList.add('wait');
       return load().then(function () {
+        btn.classList.remove('wait');
         if (!wanted || document.hidden) return;
         if (ctx.state !== 'running') return;
         if (!source) {
@@ -679,14 +748,14 @@
           source.loop = true;
           source.loopStart = LOOP_START;
           source.loopEnd = LOOP_END;
-          source.connect(meter || gain);
+          source.connect(entry);
           source.start(0, LOOP_START);
         }
         fade(LEVEL, 3);
         playing = true; pausedByHide = false;
         render();
       });
-    }).catch(function () {});
+    }).catch(function () { btn.classList.remove('wait'); });
   }
   function pause() {
     if (!ctx || !playing) { playing = false; render(); return; }
@@ -698,11 +767,14 @@
 
   btn.addEventListener('click', function () {
     if (playing) { wanted = false; remember('off'); pause(); }
-    else { wanted = true; remember('on'); start(); }
+    else {
+      if (session) { try { session.type = 'playback'; } catch (e) {} }
+      wanted = true; remember('on'); start();
+    }
   });
 
   function firstTouch(e) {
-    if (btn.contains(e.target)) return;
+    if (session || btn.contains(e.target)) return;
     if (wanted && !playing && !document.hidden) start();
   }
   ['pointerup', 'click', 'keydown', 'touchend'].forEach(function (type) {
@@ -715,8 +787,19 @@
     else if (wanted && pausedByHide) { start(); }
   });
 
+  // Fetch the music once the page itself is in, so it is ready the moment someone clicks or taps.
+  function early() {
+    var net = navigator.connection;
+    if (!wanted || buffer || (net && (net.saveData || /2g/.test(net.effectiveType || '')))) return;
+    if (session) { download().catch(function () {}); return; }      // there the player itself is only made at the tap
+    setup();
+    load().catch(function () {});
+  }
+  if (document.readyState === 'complete') setTimeout(early, 1200);
+  else window.addEventListener('load', function () { setTimeout(early, 1200); });
+
   render();
-  if (wanted) { setup(); if (ctx.state === 'running') start(); }
+  if (wanted && !session) { setup(); if (ctx.state === 'running') start(); }
 })();
 </script>
 </body>
